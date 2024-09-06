@@ -1,11 +1,11 @@
-const TR = require ('./models/TrainingRequest')
+const TR = require ('../models/TrainingRequest')
 
 
 
 const CreateTR = async (req , res)=>{
     try {
         const {name , phone ,email ,title } = req.body ;
-        const trainingrequest = TR.create({name , phone ,email ,title });
+        const trainingrequest =await  TR.create({name , phone ,email ,title });
         res.status(201).json(trainingrequest);
     }
     catch{

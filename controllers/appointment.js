@@ -1,9 +1,9 @@
-const appo = require("./models/appointment")
+const appo = require("../models/appointement")
 
 const createAppointment = async (req,res) => {
     try {
         const {fullName , phoneNumber ,location , date , category} = req.body ;
-        const appointement = appo.create({fullName , phoneNumber ,location , date , category});
+        const appointement =await  appo.create({fullName , phoneNumber ,location , date , category});
         res.status(201).json(appointement);
     }
     catch (error) {

@@ -1,12 +1,16 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const connectDB = require('./config/database'); // Import the database connection file
 const orderRoutes = require('./routes/orderRoute');
 const productRoutes = require('./routes/productRoute');
 const appointmentRoutes = require('./routes/appointementRoute');
 const trainingRoutes = require('./routes/trainingRoute');
+const trainingrequestRoutes = require('./routes/trainingrequest');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000; // Updated port number
+
+// Connect to MongoDB
+connectDB(); // Initialize the database connection
 
 // Middleware
 app.use(express.json());
@@ -16,22 +20,12 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/trainings', trainingRoutes);
-
-
-
-// Connect to MongoDB
-mongoose.connect('mongodb+srv://amarbouzida62:1234@cluster0.nlsdc.mongodb.net/', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => console.log('MongoDB connected'))
-.catch((err) => console.error('MongoDB connection error:', err));
+app.use('/api/trainingrequest', trainingrequestRoutes)
 
 // Define a simple route
 app.get('/', (req, res) => {
   res.send('Hello, Express!');
 });
-
 
 // Start the server
 app.listen(PORT, () => {
