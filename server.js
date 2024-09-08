@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 4000;
 app.use(express.json());
 
 app.use('/api/user', userRoutes); // Use auth routes for registration, login, and logout
-app.use('/api/orders', orderRoutes);
+app.use('/api/order', orderRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/trainings', trainingRoutes);
