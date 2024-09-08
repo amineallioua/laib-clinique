@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const generateTokenAndSetCookie = require('../utils/token'); // Adjust path as necessary
 
-const JWT_SECRET = 'your_jwt_secret_key'; // Replace with your actual JWT secret key
+const JWT_SECRET = 'your_jwt_secret_key'; 
 
 // Register a new user
 const register = async (req, res) => {
