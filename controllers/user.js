@@ -1,9 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
-const generateTokenAndSetCookie = require('../utils/token'); // Adjust path as necessary
-
-const JWT_SECRET = 'your_jwt_secret_key'; // Replace with your actual JWT secret key
+require('dotenv').config();  // Load .env file
 
 // Register a new user
 const register = async (req, res) => {
@@ -28,7 +26,7 @@ const register = async (req, res) => {
     await user.save();
 
     // Generate a JWT token
-    const token = jwt.sign({ userId: user._id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     res.status(201).json({ 
       message: 'User registered successfully',
@@ -57,7 +55,7 @@ const login = async (req, res) => {
     }
 
     // Generate a JWT token
-    const token = jwt.sign({ userId: user._id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     res.status(200).json({ 
       message: 'Login successful',
