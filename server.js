@@ -7,6 +7,7 @@ const productRoutes = require('./routes/productRoute');
 const appointmentRoutes = require('./routes/appointementRoute');
 const trainingRoutes = require('./routes/trainingRoute');
 const trainingrequestRoutes = require('./routes/trainingrequest');
+require('dotenv').config();  // Load .env file
 
 const app = express();
 
@@ -21,7 +22,7 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/trainings', trainingRoutes);
 app.use('/api/trainingrequest', trainingrequestRoutes)
 
-mongoose.connect('mongodb+srv://amarbouzida62:1234@cluster0.nlsdc.mongodb.net/', {
+mongoose.connect(process.env.DB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
