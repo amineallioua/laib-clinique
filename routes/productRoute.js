@@ -10,8 +10,8 @@ const {
 const authenticateToken = require('../middlewares/auth.middleware');
 
 // Routes
-router.post('/',createProduct);
-router.get('/',getProducts);
+router.post('/create',createProduct);
+router.get('/get',getProducts);
 router.get('/:id', getProductById);
 router.put('/:id', updateProduct);
 router.delete('/:id', deleteProduct);
