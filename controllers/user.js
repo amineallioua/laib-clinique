@@ -3,6 +3,18 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user');
 require('dotenv').config();  // Load .env file
 
+const getMe = async (req,res)=>{
+  try {
+    const username=req.user.username
+    const user = await User.findOne({ username }).select('-password');
+    res.status(200).json(user)
+  } catch (error) {
+    res.status(500).json({ message: 'Error registering user', error: error.message });
+  }
+}
+
+
+
 // Register a new user
 const register = async (req, res) => {
   try {
@@ -45,7 +57,7 @@ const login = async (req, res) => {
     // Find the user
     const user = await User.findOne({ username });
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(400).json({ message: 'User not found' });
     }
 
     // Compare the password
@@ -71,4 +83,4 @@ const logout = (req, res) => {
   res.status(200).json({ message: 'Logged out successfully' });
 };
 
-module.exports = { register, login, logout };
+module.exports = { register, login, logout,getMe };
