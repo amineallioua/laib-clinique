@@ -2,12 +2,12 @@
 const mongoose = require('mongoose');
 
 // MongoDB connection string
-const mongoURI = 'mongodb+srv://amarbouzida62:1234@cluster0.nlsdc.mongodb.net/';
+const  DB_URL = 'mongodb+srv://amarbouzida62:1234@cluster0.nlsdc.mongodb.net/';
 
 // Function to connect to the MongoDB database
 const connectDB = async () => {
   try {
-    await mongoose.connect(mongoURI, {
+    await mongoose.connect(DB_URL, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });

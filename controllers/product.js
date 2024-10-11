@@ -2,35 +2,35 @@ const Product = require('../models/product'); // Adjust the path as needed
 
 // Create a new product
 const createProduct = async (req, res) => {
-    try {
-      const { name, description, photo, price, stockQuantity } = req.body;
-  
-      // Check if a product with the same name already exists
-      const existingProduct = await Product.findOne({ name });
-      if (existingProduct) {
-        return res.status(400).json({ message: 'A product with the same name already exists' });
-      }
-  
-      const product = new Product({
-        name,
-        description,
-        photo,
-        price,
-        stockQuantity
-      });
-  
-      await product.save();
-      res.status(201).json({ message: 'Product created successfully', product });
-    } catch (error) {
-      // Handle duplicate key error specifically
-      if (error.code === 11000) {
-        return res.status(400).json({ message: 'Product name must be unique' });
-      }
-      
-      res.status(500).json({ message: 'Error creating product', error: error.message });
+  try {
+    const { name, description, price, stockQuantity } = req.body;
+    const photo = req.file ? req.file.path : ''; // Save the uploaded photo path
+
+    // Check if a product with the same name already exists
+    const existingProduct = await Product.findOne({ name });
+
+    if (existingProduct) {
+      return res.status(400).json({ message: 'A product with the same name already exists' });
     }
-  };
-  
+
+    const product = new Product({
+      name,
+      description,
+      photo, // Store the file path of the uploaded image
+      price,
+      stockQuantity
+    });
+
+    await product.save();
+    res.status(201).json({ message: 'Product created successfully', product });
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({ message: 'Product name must be unique' });
+    }
+    res.status(500).json({ message: 'Error creating product', error: error.message });
+  }
+};
+
 
 // Get all products
 const getProducts = async (req, res) => {

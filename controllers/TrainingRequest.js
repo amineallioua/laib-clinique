@@ -9,7 +9,7 @@ const CreateTR = async (req , res)=>{
         res.status(201).json(trainingrequest);
     }
     catch{
-        res.status(500).json({ message: 'Error creating trainingrequest', error });
+        res.status(500).json({ message: 'Error creating trainingrequest',  });
     }
 }
 
