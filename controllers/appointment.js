@@ -1,5 +1,5 @@
-const Appointment = require("../models/appointement")
-const mongoose = require ('mongoose');
+const Appointment = require("../models/appointement");
+const mongoose = require('mongoose');
 
 const createAppointment = async (req, res) => {
   try {
@@ -20,101 +20,163 @@ const createAppointment = async (req, res) => {
   }
 };
 
-const getAllappointment = async (req, res) => {
-    try {
-      const appointments = await Appointment.find()
-      res.status(200).json(appointments);
-    } catch (error) {
-      res.status(500).json({ message: 'Error retrieving appointments', error });
+const getAllAppointments = async (req, res) => {
+  try {
+    const appointments = await Appointment.find();
+
+    // Format each appointment's date to "yyyy-MM-dd"
+    const formattedAppointments = appointments.map((appointment) => ({
+      ...appointment.toObject(),
+      date: appointment.date.toISOString().split('T')[0], // Format date
+    }));
+
+    res.status(200).json(formattedAppointments);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving appointments', error });
+  }
+};
+
+// Confirm Appointment
+const confirmAppointment = async (req, res) => {
+  const { id } = req.params;
+  const { time, status } = req.body; // Destructure time and status from the request body
+
+  // Validate the ObjectId format
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid appointment ID format' });
+  }
+
+  try {
+    // Update the status and time
+    const appointment = await Appointment.findByIdAndUpdate(
+      id,
+      { time, status: 'Confirmed' }, // Ensure the status is set to 'Confirmed'
+      { new: true } // Return the updated document
+    );
+
+    // Check if the appointment exists
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
     }
-  };
 
-  //-----------------------------------------------------------------------------------------------------
+    // Return success response with the updated appointment
+    res.status(200).json({ message: 'Appointment confirmed successfully', appointment });
+  } catch (error) {
+    // Handle errors and return a server error response
+    res.status(500).json({ message: 'Error confirming appointment', error });
+  }
+};
 
-  const getRecentAppointments = async (req, res) => {
-    try {
-      // Fetch the last 6 appointments, selecting only the required fields
-      const appointments = await Appointment.find()
-        .sort({ date: -1 }) // Sort by date descending
-        .limit(6) // Get the last six appointments
-        .select('fullName date category'); // Select only required fields
-  
-      // Check if appointments were found
-      if (!appointments || appointments.length === 0) {
-        return res.status(404).json({ message: 'No appointments found' });
-      }
-  
-      // Map appointments to include formatted date and time
-      const formattedAppointments = appointments.map(app => {
-        if (!app.date) {
-          return {
-            fullName: app.fullName,
-            date: 'Unknown', // Default value if date is missing
-            time: 'Unknown', // Default value if time is missing
-            category: app.category,
-          };
-        }
+
+
+// Cancel Appointment
+const cancelAppointment = async (req, res) => {
+  const { id } = req.params;
+
+  // Validate the ObjectId format
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid appointment ID format' });
+  }
+
+  try {
+    // Update the status to 'Cancelled'
+    const appointment = await Appointment.findByIdAndUpdate(
+      id,
+      { status: 'Cancelled' }, // Capitalized 'Cancelled' to match the enum
+      { new: true } // Return the updated document
+    );
+
+    // Check if the appointment exists
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    // Return success response with the updated appointment
+    res.status(200).json({ message: 'Appointment canceled successfully', appointment });
+  } catch (error) {
+    // Handle errors and return a server error response
+    res.status(500).json({ message: 'Error canceling appointment', error });
+  }
+};
+
+
+const getRecentAppointments = async (req, res) => {
+  try {
+    const appointments = await Appointment.find()
+      .sort({ date: -1 })
+      .limit(6)
+      .select('fullName date category');
+
+    if (!appointments || appointments.length === 0) {
+      return res.status(404).json({ message: 'No appointments found' });
+    }
+
+    const formattedAppointments = appointments.map(app => {
+      if (!app.date) {
         return {
           fullName: app.fullName,
-          date: app.date.toISOString().split('T')[0], // Format date as YYYY-MM-DD
-          time: app.date.toISOString().split('T')[1].slice(0, 5), // Format time as HH:mm
+          date: 'Unknown',
+          time: 'Unknown',
           category: app.category,
         };
-      });
-  
-      res.status(200).json(formattedAppointments);
-    } catch (error) {
-      console.error('Error retrieving appointments:', error);
-      res.status(500).json({ message: 'Error retrieving appointments', error });
-    }
-  };
-  
-  
-  // Make sure to update your route to use this function
-  
-  const getAppointmentById = async (req, res) => {
-    const { id } = req.params;
-  
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid appointment ID format' });
-    }
-  
-    try {
-      const appointment = await Appointment.findById(id);
-      if (!appointment) {
-        return res.status(404).json({ message: 'Appointment not found' });
       }
-      res.status(200).json(appointment);
-    } catch (error) {
-      res.status(500).json({ message: 'Server error', error });
+      return {
+        fullName: app.fullName,
+        date: app.date.toISOString().split('T')[0],
+        time: app.date.toISOString().split('T')[1].slice(0, 5),
+        category: app.category,
+      };
+    });
+
+    res.status(200).json(formattedAppointments);
+  } catch (error) {
+    console.error('Error retrieving appointments:', error);
+    res.status(500).json({ message: 'Error retrieving appointments', error });
+  }
+};
+
+const getAppointmentById = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid appointment ID format' });
+  }
+
+  try {
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
     }
-  };
-  
-  
-    /////////////////////////
-  
-const deleteAppointment = async (req , res) => {
-    try{
-        const {fullName , phoneNumber} = req.body ;
 
+    // Format the date to "yyyy-MM-dd"
+    const formattedAppointment = {
+      ...appointment.toObject(),
+      date: appointment.date.toISOString().split('T')[0], // Format date
+    };
 
-        if (!fullName || !phoneNumber) {
-            return res.status(400).json({ message: 'fullname and phonenumber are required' });
-          }
+    res.status(200).json(formattedAppointment);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
 
-          const result = await appo.deleteOne({ fullName, phoneNumber });
-          res.status(200).json({ message: 'appointement deleted successfully' });
-    }
-    catch{
-        res.status(500).json({message: 'Error deleting appointement', error })
-    }
+const deleteAppointment = async (req, res) => {
+  const { fullName, phoneNumber } = req.body;
 
+  if (!fullName || !phoneNumber) {
+    return res.status(400).json({ message: 'FullName and PhoneNumber are required' });
+  }
 
-}
+  try {
+    const result = await Appointment.deleteOne({ fullName, phoneNumber });
+    res.status(200).json({ message: 'Appointment deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting appointment', error });
+  }
+};
 
 const deleteAllAppointments = async (req, res) => {
   try {
-    // Delete all appointments
     await Appointment.deleteMany({});
     res.status(200).json({ message: 'All appointments have been deleted successfully.' });
   } catch (error) {
@@ -122,10 +184,13 @@ const deleteAllAppointments = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
-module.exports = { createAppointment , getAllappointment , deleteAppointment , getRecentAppointments ,deleteAllAppointments,getAppointmentById};
+module.exports = {
+  createAppointment,
+  getAllAppointments,
+  confirmAppointment,
+  cancelAppointment,
+  getRecentAppointments,
+  getAppointmentById,
+  deleteAppointment,
+  deleteAllAppointments
+};

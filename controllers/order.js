@@ -116,3 +116,32 @@ exports.confirmOrder = async (req, res) => {
       res.status(500).json({ message: `Error fetching order: ${error.message}` });
     }
   };
+
+  exports.cancelOrder = async (req, res) => {
+    try {
+        const { orderId } = req.params; // Extract order ID from URL parameters
+
+        // Find the order by ID
+        const order = await Order.findById(orderId);
+        if (!order) {
+            console.log("Order not found in database."); // Log when order is not found
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        // Check if the order is already cancelled
+        if (order.status === 'Cancelled') {
+            return res.status(400).json({ message: 'Order is already cancelled' });
+        }
+
+        // Update the order status to "Cancelled"
+        order.status = 'Cancelled';
+        await order.save();
+
+        res.status(200).json({ message: 'Order cancelled successfully', order });
+    } catch (error) {
+        console.error("Error cancelling order:", error); // Log the error
+        res.status(500).json({ message: 'Failed to cancel order', error: error.message });
+    }
+};
+
+  
