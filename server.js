@@ -17,7 +17,23 @@ const PORT = process.env.PORT || 4000;
 connectedDB();
 
 // Middleware
-app.use(cors({ origin: 'http://localhost:5173' })); // Allow your frontend origin
+// Define your allowed origins
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174'  // Add more ports or origins as needed
+       // Example of a different origin
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, origin);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 app.use('/uploads', express.static('uploads')); // Serve static files from 'uploads' directory
