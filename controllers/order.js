@@ -1,5 +1,6 @@
 const Order = require('../models/order');
 const Product = require('../models/product'); // Assuming you have a Product model
+const mongoose = require('mongoose')
 
 // Create a new order with multiple products and quantities
 exports.createOrder = async (req, res) => {
@@ -83,3 +84,64 @@ exports.confirmOrder = async (req, res) => {
       res.status(500).json({ message: 'Failed to confirm order', error: error.message });
     }
   };
+  exports.getAllOrders = async (req, res) => {
+    try {
+      const orders = await Order.find() // Fetch all orders
+        .populate('products.productId', 'productName'); // Optionally populate product details
+  
+      res.status(200).json(orders); // Send the orders as a JSON response
+    } catch (error) {
+      res.status(500).json({ message: 'Error retrieving orders', error });
+    }
+  };
+
+
+  exports.getOrderById = async (req, res) => {
+    const { id } = req.params;  // or req.body.id, depending on how you're sending it
+    
+    // Debug the id value
+    console.log("Debug: Order ID received: ", id);
+  
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid order ID' });
+    }
+  
+    try {
+      const order = await Order.findById(id);
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+      res.json(order);
+    } catch (error) {
+      res.status(500).json({ message: `Error fetching order: ${error.message}` });
+    }
+  };
+
+  exports.cancelOrder = async (req, res) => {
+    try {
+        const { orderId } = req.params; // Extract order ID from URL parameters
+
+        // Find the order by ID
+        const order = await Order.findById(orderId);
+        if (!order) {
+            console.log("Order not found in database."); // Log when order is not found
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        // Check if the order is already cancelled
+        if (order.status === 'Cancelled') {
+            return res.status(400).json({ message: 'Order is already cancelled' });
+        }
+
+        // Update the order status to "Cancelled"
+        order.status = 'Cancelled';
+        await order.save();
+
+        res.status(200).json({ message: 'Order cancelled successfully', order });
+    } catch (error) {
+        console.error("Error cancelling order:", error); // Log the error
+        res.status(500).json({ message: 'Failed to cancel order', error: error.message });
+    }
+};
+
+  

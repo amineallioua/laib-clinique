@@ -8,9 +8,10 @@ const {
   deleteProduct
 } = require('../controllers/product'); // Adjust the path as needed
 const authenticateToken = require('../middlewares/auth.middleware');
+const upload = require('../middlewares/upload'); // Import Multer config
 
-// Routes
-router.post('/create',createProduct);
+// Route to create a new product with image upload
+router.post('/create', upload.single('photo'), createProduct);
 router.get('/get',getProducts);
 router.get('/:id', getProductById);
 router.put('/:id', updateProduct);

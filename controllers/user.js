@@ -52,7 +52,15 @@ const register = async (req, res) => {
 // Login user
 const login = async (req, res) => {
   try {
+    // Log the request body for debugging
+    console.log("Request Body:", req.body);
+
     const { username, password } = req.body;
+
+    // Ensure both username and password are provided
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username and password are required' });
+    }
 
     // Find the user
     const user = await User.findOne({ username });
@@ -69,11 +77,14 @@ const login = async (req, res) => {
     // Generate a JWT token
     const token = jwt.sign({ userId: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
+    // Respond with success and token
     res.status(200).json({ 
       message: 'Login successful',
       token
     });
+
   } catch (error) {
+    console.error('Error during login:', error); // Log the error to get more details
     res.status(500).json({ message: 'Error logging in', error: error.message });
   }
 };

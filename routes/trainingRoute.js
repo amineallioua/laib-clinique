@@ -1,13 +1,29 @@
 const express = require('express');
-const { Createtrainig ,  getAlltrai , getTrainigById, deleteTrai  } = require('../controllers/training');
+const {
+    getAllTrainings,
+    createTraining,
+    getTrainingById,
+    deleteTraining,
+    deleteAllTrainings
+} = require('../controllers/training'); // Make sure the path is correct
+const upload = require('../middlewares/upload'); // Multer configuration
+
 
 const router = express.Router();
 
-router.post('/create_training', Createtrainig);
-router.get('/get_training', getAlltrai);
-router.get('/:id', getTrainigById);
-router.delete('/delete_training', deleteTrai);
+// Create a new training request
+router.post('/create_training', upload.single('photo'), createTraining);
 
+// Get all training requests
+router.get('/get_training', getAllTrainings);
+
+// Get training by ID
+router.get('/:id', getTrainingById);
+
+// Delete a training request by ID
+router.delete('/delete_training/:id', deleteTraining);
+
+router.delete('/deleteAll',deleteAllTrainings)
 
 module.exports = router;
  
