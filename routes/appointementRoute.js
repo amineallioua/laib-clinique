@@ -1,5 +1,5 @@
 const express = require('express');
-const { createAppointment , getAllAppointments , deleteAppointment ,deleteAllAppointments, getRecentAppointments ,getAppointmentById, confirmAppointment,cancelAppointment,} = require('../controllers/appointment');
+const { createAppointment , getAllAppointments , deleteAppointment ,deleteAllAppointments, getRecentAppointments ,getAppointmentById, confirmAppointment,cancelAppointment, deleteAppointmentById,} = require('../controllers/appointment');
 const authenticateToken = require('../middlewares/auth.middleware');
 
 const router = express.Router();
@@ -12,6 +12,8 @@ router.get ('/recent_appointemnt',getRecentAppointments)
 router.delete('/delete_all_appointments', deleteAllAppointments); // New route
 router.put('/confirm/:id',confirmAppointment);
 router.put('/cancel/:id',cancelAppointment)
+router.delete('/:id', deleteAppointmentById);
+
 
 
 

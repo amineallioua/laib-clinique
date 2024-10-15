@@ -10,6 +10,7 @@ router.put('/confirm/:orderId', orderController.confirmOrder);
 router.put('/cancel/:orderId',orderController.cancelOrder)
 
 router.get('/getAllOrders',orderController.getAllOrders);
+router.delete('/:id',orderController.deleteOrder)
 
 router.get('/:id',orderController.getOrderById);
 
