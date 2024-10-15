@@ -4,7 +4,8 @@ const {
     createTraining,
     getTrainingById,
     deleteTraining,
-    deleteAllTrainings
+    deleteAllTrainings,
+    updateTraining
 } = require('../controllers/training'); // Make sure the path is correct
 const upload = require('../middlewares/upload'); // Multer configuration
 
@@ -13,6 +14,9 @@ const router = express.Router();
 
 // Create a new training request
 router.post('/create_training', upload.single('photo'), createTraining);
+
+//update training
+router.put('/update/:id', upload.single('photo'), updateTraining);
 
 // Get all training requests
 router.get('/get_training', getAllTrainings);

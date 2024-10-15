@@ -21,6 +21,11 @@ const trainingRequestSchema = new mongoose.Schema({
     required: true,
     trim: true
   }
+  // training: {
+  //   type: mongoose.Schema.Types.ObjectId, // Refers to the ID of a Training document
+  //   ref: 'Training', // Refers to the Training model
+  //   required: true
+  // }
 }, {
   timestamps: true // Automatically adds createdAt and updatedAt fields
 });

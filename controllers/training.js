@@ -47,6 +47,60 @@ const createTraining = async (req, res) => {
     }
 };
 
+const updateTraining = async (req, res) => {
+    try {
+        const { id } = req.params; // Assume the training ID is provided in the request parameters
+        const { description, title, date, places, type, audience, price } = req.body;
+
+        // Validate 'type', 'audience', and 'price'
+        const validTypes = ['paid', 'free', 'reduced'];
+        const validAudiences = ['family and children', 'specialist'];
+
+        if (!validTypes.includes(type)) {
+            return res.status(400).json({ message: `Invalid training type. Allowed values: ${validTypes.join(', ')}` });
+        }
+
+        if (!validAudiences.includes(audience)) {
+            return res.status(400).json({ message: `Invalid audience. Allowed values: ${validAudiences.join(', ')}` });
+        }
+
+        if (type === 'paid' && (!price || isNaN(price) || price <= 0)) {
+            return res.status(400).json({ message: 'Price must be a valid positive number for paid trainings.' });
+        }
+
+        // Get the uploaded image (if provided)
+        const photo = req.file ? req.file.path : null;
+
+        // Find the existing training by ID
+        const existingTraining = await Training.findById(id);
+        if (!existingTraining) {
+            return res.status(404).json({ message: 'Training not found.' });
+        }
+
+        // Update only the provided fields
+        existingTraining.description = description || existingTraining.description;
+        existingTraining.title = title || existingTraining.title;
+        existingTraining.date = date || existingTraining.date;
+        existingTraining.places = places || existingTraining.places;
+        existingTraining.type = type || existingTraining.type;
+        existingTraining.audience = audience || existingTraining.audience;
+        existingTraining.price = type === 'free' ? 0 : (price || existingTraining.price);
+
+        // Update photo if provided
+        if (photo) {
+            existingTraining.photo = photo;
+        }
+
+        // Save the updated training
+        const updatedTraining = await existingTraining.save();
+
+        res.status(200).json(updatedTraining);
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating training', error: error.message });
+    }
+};
+
+
 
 // Get all trainings
 const getAllTrainings = async (req, res) => {
@@ -77,13 +131,13 @@ const getTrainingById = async (req, res) => {
 // Delete training by name
 const deleteTraining = async (req, res) => {
     try {
-        const { name } = req.body;
+        const { id } = req.params;
 
-        if (!name) {
+        if (!id) {
             return res.status(400).json({ message: 'Name is required' });
         }
 
-        const result = await Training.deleteOne({ name });
+        const result = await Training.deleteOne({ _id:id });
 
         if (result.deletedCount === 0) {
             return res.status(404).json({ message: 'Training not found' });
@@ -109,5 +163,6 @@ module.exports = {
     getAllTrainings,
     getTrainingById,
     deleteTraining,
-    deleteAllTrainings
+    deleteAllTrainings,
+    updateTraining
 };

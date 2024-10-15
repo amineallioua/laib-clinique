@@ -142,6 +142,26 @@ exports.confirmOrder = async (req, res) => {
         console.error("Error cancelling order:", error); // Log the error
         res.status(500).json({ message: 'Failed to cancel order', error: error.message });
     }
+  }
+
+
+    exports.deleteOrder = async (req, res) => {
+      try {
+          const { id } = req.params; // Extract order ID from URL parameters
+          
+          // Find the order by ID
+          const order = await Order.deleteOne({_id:id});
+          
+          if (order.deletedCount === 0) {
+            return res.status(404).json({ message: 'Order not found' });
+          }
+  
+          res.status(200).json({ message: 'Order deleted successfully', order });
+      } catch (error) {
+          console.error("Error cancelling order:", error); // Log the error
+          res.status(500).json({ message: 'Failed to delete order', error: error.message });
+      }
 };
+
 
   
