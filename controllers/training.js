@@ -1,4 +1,6 @@
 const Training = require('../models/training.js'); // Use proper naming for the model
+const fs = require('fs');
+const path = require('path');
 
 // Create a new training
 const createTraining = async (req, res) => {
@@ -134,16 +136,36 @@ const deleteTraining = async (req, res) => {
         const { id } = req.params;
 
         if (!id) {
-            return res.status(400).json({ message: 'Name is required' });
+            return res.status(400).json({ message: 'ID is required' });
         }
 
-        const result = await Training.deleteOne({ _id:id });
+        // Find the training first to get the image path
+        const training = await Training.findById(id);
+
+        if (!training) {
+            return res.status(404).json({ message: 'Training not found' });
+        }
+
+        const imagePath = training.photo;
+
+        if (imagePath) {
+            const filePath = path.join(__dirname, '../', imagePath); // Adjust path as needed
+
+            fs.unlink(filePath, (err) => {
+                if (err) {
+                    console.error('Error deleting image:', err.message);
+                }
+            });
+        }
+
+        // Delete the training from the database
+        const result = await Training.deleteOne({ _id: id });
 
         if (result.deletedCount === 0) {
             return res.status(404).json({ message: 'Training not found' });
         }
 
-        res.status(200).json({ message: 'Training deleted successfully' });
+        res.status(200).json({ message: 'Training and image deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Error deleting training', error: error.message });
     }
