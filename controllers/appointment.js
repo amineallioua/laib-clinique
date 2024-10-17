@@ -175,8 +175,6 @@ const deleteAppointment = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-=======
 const deleteAppointmentById = async (req, res) => {
   const { id } = req.params;
 
@@ -196,7 +194,6 @@ const deleteAppointmentById = async (req, res) => {
   }
 };
 
->>>>>>> 5d4caf17937186ff61a0048479a48513102eccfc
 const deleteAllAppointments = async (req, res) => {
   try {
     await Appointment.deleteMany({});
@@ -214,10 +211,6 @@ module.exports = {
   getRecentAppointments,
   getAppointmentById,
   deleteAppointment,
-<<<<<<< HEAD
-  deleteAllAppointments
-=======
   deleteAllAppointments,
   deleteAppointmentById
->>>>>>> 5d4caf17937186ff61a0048479a48513102eccfc
 };

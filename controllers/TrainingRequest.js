@@ -8,13 +8,9 @@ const CreateTR = async (req , res)=>{
         const trainingrequest =await  TR.create({name , phone ,email ,title,training });
         res.status(201).json(trainingrequest);
     }
-<<<<<<< HEAD
-    catch{
-        res.status(500).json({ message: 'Error creating trainingrequest',  });
-=======
+    
     catch(error){
         res.status(500).json({ message: 'Error creating trainingrequest', error });
->>>>>>> 5d4caf17937186ff61a0048479a48513102eccfc
     }
 }
 

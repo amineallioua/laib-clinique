@@ -8,6 +8,8 @@ const appointmentRoutes = require('./routes/appointementRoute'); // Fixed typo i
 const trainingRoutes = require('./routes/trainingRoute');
 const trainingRequestRoutes = require('./routes/trainingrequest'); // Improved naming convention
 const connectedDB = require('./config/database');
+const bodyParser = require('body-parser');
+
 require('dotenv').config();  // Load .env file
 
 const app = express();

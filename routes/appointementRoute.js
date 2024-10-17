@@ -1,5 +1,4 @@
 const express = require('express');
-const { createAppointment , getAllAppointments , deleteAppointment ,deleteAllAppointments, getRecentAppointments ,getAppointmentById, confirmAppointment,cancelAppointment,} = require('../controllers/appointment');
 const { createAppointment , getAllAppointments , deleteAppointment ,deleteAllAppointments, getRecentAppointments ,getAppointmentById, confirmAppointment,cancelAppointment, deleteAppointmentById,} = require('../controllers/appointment');
 const authenticateToken = require('../middlewares/auth.middleware');
 

@@ -142,12 +142,10 @@ exports.confirmOrder = async (req, res) => {
         console.error("Error cancelling order:", error); // Log the error
         res.status(500).json({ message: 'Failed to cancel order', error: error.message });
     }
-<<<<<<< HEAD
 };
 
   
-=======
-  }
+  
 
 
     exports.deleteOrder = async (req, res) => {
@@ -170,4 +168,3 @@ exports.confirmOrder = async (req, res) => {
 
 
   
->>>>>>> 5d4caf17937186ff61a0048479a48513102eccfc
