@@ -175,6 +175,28 @@ const deleteAppointment = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
+=======
+const deleteAppointmentById = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ message: 'id is required' });
+  }
+
+  try {
+    const result = await Appointment.deleteOne({_id:id});
+    if (result.deletedCount === 0) {
+      console.log("Appointment not found in database."); // Log when the order is not found
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+    res.status(200).json({ message: 'Appointment deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting appointment', error });
+  }
+};
+
+>>>>>>> 5d4caf17937186ff61a0048479a48513102eccfc
 const deleteAllAppointments = async (req, res) => {
   try {
     await Appointment.deleteMany({});
@@ -192,5 +214,10 @@ module.exports = {
   getRecentAppointments,
   getAppointmentById,
   deleteAppointment,
+<<<<<<< HEAD
   deleteAllAppointments
+=======
+  deleteAllAppointments,
+  deleteAppointmentById
+>>>>>>> 5d4caf17937186ff61a0048479a48513102eccfc
 };
