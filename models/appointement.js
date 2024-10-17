@@ -23,7 +23,6 @@ const appointmentSchema = new mongoose.Schema({
   },
   time: {
     type: String, // Use String to store time in HH:mm format
-    required: true,
   },
   category: {
     type: String,
