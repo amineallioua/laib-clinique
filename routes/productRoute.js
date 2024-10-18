@@ -14,7 +14,7 @@ const upload = require('../middlewares/upload'); // Import Multer config
 router.post('/create', upload.single('photo'), createProduct);
 router.get('/get',getProducts);
 router.get('/:id', getProductById);
-router.put('/:id', updateProduct);
+router.put('/:id', upload.single('photo'), updateProduct);
 router.delete('/:id', deleteProduct);
 
 module.exports = router;

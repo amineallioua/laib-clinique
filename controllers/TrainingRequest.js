@@ -1,5 +1,5 @@
 const TR = require ('../models/TrainingRequest')
-
+const Training = require('../models/training'); // Import the Training model
 
 
 const CreateTR = async (req , res)=>{
@@ -69,5 +69,43 @@ const getTrainingByCourse =async (req , res) => {
 }
 
 
+const confirmTR = async (req, res) => {
+  try {
+      const { id, trainingId } = req.params;
 
-module.exports={CreateTR,getAlltr,deleteTR,getTrainingByCourse}
+      if (!id || !trainingId) {
+          return res.status(400).json({ message: 'Request ID and Training ID are required' });
+      }
+
+      // Update the training request to confirmed
+      const trainingRequest = await TR.findByIdAndUpdate(
+          id,
+          { confirmed: true },
+          { new: true }
+      );
+
+      if (!trainingRequest) {
+          return res.status(404).json({ message: 'Training request not found' });
+      }
+
+      // Decrement the number of places in the corresponding training
+      const training = await Training.findOneAndUpdate(
+          { _id: trainingId, places: { $gt: 0 } }, // Ensure places are available
+          { $inc: { places: -1 } },
+          { new: true }
+      );
+
+      if (!training) {
+          return res.status(400).json({ message: 'No available places for this training' });
+      }
+
+      res.status(200).json({ message: 'Training request confirmed successfully', trainingRequest, training });
+  } catch (error) {
+      res.status(500).json({ message: 'Error confirming training request', error });
+  }
+};
+
+
+
+
+module.exports={CreateTR,getAlltr,deleteTR,getTrainingByCourse,confirmTR}

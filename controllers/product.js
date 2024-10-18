@@ -1,4 +1,5 @@
 const Product = require('../models/product'); // Adjust the path as needed
+const Order = require('../models/order')
 
 // Create a new product
 const createProduct = async (req, res) => {
@@ -58,11 +59,24 @@ const getProductById = async (req, res) => {
 // Update a product by ID
 const updateProduct = async (req, res) => {
   try {
-    const { name, description, photo, price, stockQuantity } = req.body;
+    const { name, description, price, stockQuantity, photo } = req.body;
+
+    // Prepare the update object
+    const updateData = {
+      name,
+      description,
+      price,
+      stockQuantity,
+    };
+
+    // Only add the photo if it was provided
+    if (photo) {
+      updateData.photo = photo;
+    }
 
     const product = await Product.findByIdAndUpdate(
       req.params.id,
-      { name, description, photo, price, stockQuantity },
+      updateData,
       { new: true, runValidators: true }
     );
 
@@ -72,20 +86,29 @@ const updateProduct = async (req, res) => {
 
     res.status(200).json({ message: 'Product updated successfully', product });
   } catch (error) {
+    console.error(error); // Log the complete error
     res.status(500).json({ message: 'Error updating product', error: error.message });
   }
 };
 
+
+
 // Delete a product by ID
 const deleteProduct = async (req, res) => {
   try {
+    // Find and delete the product
     const product = await Product.findByIdAndDelete(req.params.id);
+    console.log(req.params.id);
+
 
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    res.status(200).json({ message: 'Product deleted successfully' });
+    // Delete associated orders
+    await Order.deleteMany({ productId: req.params.id });
+
+    res.status(200).json({ message: 'Product and associated orders deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting product', error: error.message });
   }
