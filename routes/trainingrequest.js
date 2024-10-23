@@ -1,14 +1,31 @@
 const express = require('express');
-const { CreateTR , getAlltr , deleteTR, getTrainingByCourse,confirmTR } = require('../controllers/TrainingRequest');
+const {
+  CreateTR,
+  getAlltr,
+  deleteTR,
+  getTrainingByCourse,
+  confirmTR
+} = require('../controllers/TrainingRequest');
 const { getTrainingById } = require('../controllers/training');
 
 const router = express.Router();
 
+// Create a new training request
 router.post('/create_trainingRequest', CreateTR);
-router.get('/get_trainingRequest', getAlltr);
-router.delete('/delete_trainingRequest', deleteTR);
-router.get('/training_request_by_course/:title',getTrainingByCourse)
-router.put('/trainingrequest/confirm/:id/:trainingId', confirmTR); // Updated route
 
+// Get all training requests
+router.get('/get_trainingRequest', getAlltr);
+
+// Delete a training request by ID
+router.delete('/delete_trainingRequest/:id', deleteTR);
+
+// Get training requests by course title
+router.get('/training_request_by_course/:title', getTrainingByCourse);
+
+// Confirm a training request with both request ID and training ID
+router.put('/trainingrequest/confirm/:requestId', confirmTR);
+
+// Get a specific training by its ID
+router.get('/training/:id', getTrainingById);
 
 module.exports = router;

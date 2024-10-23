@@ -14,18 +14,24 @@ const trainingRequestSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    trim: true,
+    trim: true
   },
   title: {
     type: String,
     required: true,
     trim: true
+  },
+  training: {
+    type: String,
+    required: true
+}, 
+  status : {
+    type:String , 
+    enum : ['pending','completed'],
+    default: 'pending', // Default status
+
   }
-  // training: {
-  //   type: mongoose.Schema.Types.ObjectId, // Refers to the ID of a Training document
-  //   ref: 'Training', // Refers to the Training model
-  //   required: true
-  // }
+
 }, {
   timestamps: true // Automatically adds createdAt and updatedAt fields
 });

@@ -37,7 +37,13 @@ const trainingSchema = new mongoose.Schema({
     type: String,
     enum: ['family and children', 'specialist'], // Enum for the two audience types
     required: true
-  }
+  },
+  reservedPlaces: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  
 }, {
   timestamps: true // Automatically adds createdAt and updatedAt fields
 });

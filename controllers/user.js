@@ -18,7 +18,7 @@ const getMe = async (req,res)=>{
 // Register a new user
 const register = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, usertype } = req.body;
 
     // Check if the username already exists
     const existingUser = await User.findOne({ username });
@@ -29,16 +29,17 @@ const register = async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new user
+    // Create a new user with the usertype
     const user = new User({
       username,
       password: hashedPassword,
+      usertype, // Include usertype here
     });
 
     await user.save();
 
     // Generate a JWT token
-    const token = jwt.sign({ userId: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id, username: user.username, usertype }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     res.status(201).json({ 
       message: 'User registered successfully',
@@ -48,6 +49,7 @@ const register = async (req, res) => {
     res.status(500).json({ message: 'Error registering user', error: error.message });
   }
 };
+
 
 // Login user
 const login = async (req, res) => {
