@@ -7,6 +7,7 @@ const productRoutes = require('./routes/productRoute');
 const appointmentRoutes = require('./routes/appointementRoute'); // Fixed typo in route import
 const trainingRoutes = require('./routes/trainingRoute');
 const trainingRequestRoutes = require('./routes/trainingrequest'); // Improved naming convention
+const notificationRoutes = require('./routes/notificationRoute')
 const connectedDB = require('./config/database');
 const bodyParser = require('body-parser');
 
@@ -47,6 +48,8 @@ app.use('/api/products', productRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/trainings', trainingRoutes);
 app.use('/api/trainingrequest', trainingRequestRoutes);
+app.use('/api/notification', notificationRoutes);
+
 
 // Global Error Handling Middleware
 app.use((err, req, res, next) => {

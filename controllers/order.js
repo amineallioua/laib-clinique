@@ -1,3 +1,4 @@
+const Notification = require('../models/notification');
 const Order = require('../models/order');
 const Product = require('../models/product'); // Assuming you have a Product model
 const mongoose = require('mongoose')
@@ -37,6 +38,16 @@ exports.createOrder = async (req, res) => {
     });
 
     const savedOrder = await newOrder.save();
+
+    const notification = new Notification({
+      type: 'Order',
+      username: clientName, // Assuming you want to store the client's name
+      id: savedOrder._id.toString(), // Use the order ID as a string
+      seen : false
+    });
+
+    await notification.save(); 
+
     res.status(201).json(savedOrder);
   } catch (error) {
     res.status(500).json({ message: 'Failed to create order', error: error.message });

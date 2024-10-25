@@ -1,4 +1,5 @@
 const TR = require('../models/TrainingRequest');
+const Notification = require('../models/notification');
 const Training = require('../models/training'); // Import the Training model
 
 // Create a new training request
@@ -7,6 +8,15 @@ const CreateTR = async (req, res) => {
       const { name, phone, email, title } = req.body;
       // Set the training field to the value of title
       const trainingRequest = await TR.create({ name, phone, email, title, training: title });
+      
+      const notification = {
+        type: 'Training Request', // Specify the type of notification
+        username: name,           // Assuming the username is the name of the person making the request
+        id: trainingRequest._id,  // Use the ID of the newly created training request
+      };
+  
+      // Assuming you have a Notification model to handle notifications
+      await Notification.create(notification);
       res.status(201).json(trainingRequest);
   } catch (error) {
       console.log(error);
