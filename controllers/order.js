@@ -47,6 +47,7 @@ exports.createOrder = async (req, res) => {
     });
 
     await notification.save(); 
+    req.io.emit("new-notification", notification);
 
     res.status(201).json(savedOrder);
   } catch (error) {

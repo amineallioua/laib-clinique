@@ -17,6 +17,8 @@ const CreateTR = async (req, res) => {
   
       // Assuming you have a Notification model to handle notifications
       await Notification.create(notification);
+      req.io.emit("new-notification", notification);
+
       res.status(201).json(trainingRequest);
   } catch (error) {
       console.log(error);

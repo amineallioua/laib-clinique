@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const http = require('http');
 const mongoose = require('mongoose');
 const userRoutes = require('./routes/user');
 const orderRoutes = require('./routes/orderRoute');
@@ -10,11 +11,22 @@ const trainingRequestRoutes = require('./routes/trainingrequest'); // Improved n
 const notificationRoutes = require('./routes/notificationRoute')
 const connectedDB = require('./config/database');
 const bodyParser = require('body-parser');
+const { Server } = require("socket.io");
 
 require('dotenv').config();  // Load .env file
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+
 
 // Connect to the database
 connectedDB();
@@ -38,6 +50,10 @@ app.use(cors({
   },
 }));
 app.use(express.json());
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
 app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 app.use('/uploads', express.static('uploads')); // Serve static files from 'uploads' directory
 
@@ -57,7 +73,17 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Internal Server Error' }); // Send a generic error response
 });
 
+
+
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
+  
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+});
+
 // Start the server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

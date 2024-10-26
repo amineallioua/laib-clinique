@@ -23,6 +23,7 @@ const createAppointment = async (req, res) => {
     });
 
     await notification.save(); // Save the notification
+    req.io.emit("new-notification", notification);
 
     res.status(201).json(savedAppointment);
   } catch (error) {
