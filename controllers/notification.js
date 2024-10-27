@@ -3,7 +3,7 @@ const Notification = require('../models/notification'); // Adjust the path as ne
 // Endpoint to get all non-seen notifications
 exports.getNonSeenNotifications = async (req, res) => {
     try {
-        const notifications = await Notification.find({ seen: false }); // Query for non-seen notifications
+        const notifications = await Notification.find({ seen: false }).sort({ createdAt: -1 });
 
         res.status(200).json(notifications); // Send the notifications in the response
     } catch (error) {

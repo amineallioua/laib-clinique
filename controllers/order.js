@@ -1,7 +1,9 @@
 const Notification = require('../models/notification');
 const Order = require('../models/order');
 const Product = require('../models/product'); // Assuming you have a Product model
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const sendEmail = require('../utils/sendMail');
+require('dotenv').config();
 
 // Create a new order with multiple products and quantities
 exports.createOrder = async (req, res) => {
@@ -46,9 +48,10 @@ exports.createOrder = async (req, res) => {
       seen : false
     });
 
-    await notification.save(); 
-    req.io.emit("new-notification", notification);
-
+    
+    const Newnotification = await notification.save(); 
+    req.io.emit("new-notification", Newnotification);
+    await sendEmail(`New order from the client ${clientName} \n you can check it in the url ${process.env.Front_URL}/orders/${savedOrder._id} `)
     res.status(201).json(savedOrder);
   } catch (error) {
     res.status(500).json({ message: 'Failed to create order', error: error.message });
