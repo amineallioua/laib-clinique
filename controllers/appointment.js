@@ -1,5 +1,7 @@
 const Appointment = require("../models/appointement");
 const mongoose = require('mongoose');
+const sendEmail = require("../middlewares/sendMail");
+
 
 const createAppointment = async (req, res) => {
   try {
@@ -9,16 +11,34 @@ const createAppointment = async (req, res) => {
       fullName,
       phoneNumber,
       location,
-      date,
+      date: new Date(date),
       category,
     });
 
     const savedAppointment = await newAppointment.save();
+
+    // Send email notification after saving the appointment
+    await sendEmail({
+      to: "laibclinque@gmail.com",       // Replace with your email
+      subject: "New Appointment Created",
+      text: `A new appointment has been created:\n\nName: ${fullName}\nPhone: ${phoneNumber}\nLocation: ${location}\nDate: ${date}\nCategory: ${category}`,
+      html: `<p>A new appointment has been created:</p>
+             <ul>
+               <li><strong>Name:</strong> ${fullName}</li>
+               <li><strong>Phone:</strong> ${phoneNumber}</li>
+               <li><strong>Location:</strong> ${location}</li>
+               <li><strong>Date:</strong> ${new Date(date).toLocaleString()}</li>
+               <li><strong>Category:</strong> ${category}</li>
+             </ul>`,
+    });
+
     res.status(201).json(savedAppointment);
   } catch (error) {
-    res.status(400).json({ message: 'Error creating appointment', error });
+    res.status(400).json({ message: "Error creating appointment", error });
   }
 };
+
+
 
 const getAllAppointments = async (req, res) => {
   try {
