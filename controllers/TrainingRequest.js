@@ -1,5 +1,7 @@
 const TR = require('../models/TrainingRequest');
+const Notification = require('../models/notification');
 const Training = require('../models/training'); // Import the Training model
+const sendEmail = require('../utils/sendMail');
 
 // Create a new training request
 const CreateTR = async (req, res) => {
@@ -7,6 +9,23 @@ const CreateTR = async (req, res) => {
       const { name, phone, email, title } = req.body;
       // Set the training field to the value of title
       const trainingRequest = await TR.create({ name, phone, email, title, training: title });
+      const training = await Training.findOne({ title });
+      if(!training)
+      {
+        res.status(400).json({ message: 'No course with this titile' })
+        return
+      }
+      const notification = {
+        type: 'Training Request', // Specify the type of notification
+        username: name,           // Assuming the username is the name of the person making the request
+        id: training._id,  // Use the ID of the newly created training request
+      };
+
+      // Assuming you have a Notification model to handle notifications
+      const Newnotification = await Notification.create(notification);
+      req.io.emit("new-notification", Newnotification);
+      await sendEmail(`New Training Request from the client ${name} \n you can check it in the url ${process.env.Front_URL}/courses/${training._id} `)
+
       res.status(201).json(trainingRequest);
   } catch (error) {
       console.log(error);

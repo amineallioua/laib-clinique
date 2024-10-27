@@ -1,5 +1,7 @@
 const Appointment = require("../models/appointement");
 const mongoose = require('mongoose');
+const Notification = require("../models/notification");
+const sendEmail = require("../utils/sendMail");
 
 const createAppointment = async (req, res) => {
   try {
@@ -14,9 +16,21 @@ const createAppointment = async (req, res) => {
     });
 
     const savedAppointment = await newAppointment.save();
+
+    const notification = new Notification({
+      type: 'Appointment',
+      username: fullName, // Assuming you want to store the client's name
+      id: savedAppointment._id.toString(), // Use the appointment ID as a string
+    });
+
+    const Newnotification = await notification.save(); 
+    req.io.emit("new-notification", Newnotification);
+    await sendEmail(`New Appointment from the client ${fullName} \n you can check it in  the url ${process.env.Front_URL}/appointments/${savedAppointment._id} `)
+
     res.status(201).json(savedAppointment);
   } catch (error) {
-    res.status(400).json({ message: 'Error creating appointment', error });
+    
+    res.status(400).json({ message: 'Error creating appointment '+ error.message });
   }
 };
 
